@@ -44,19 +44,30 @@ public class Classifier {
         this.context = context;
     }
 
-    public void init(String modelName) throws IOException {
+    public void init(@Nullable String modelName) throws IOException {
+        if (modelName == null) {
+            throw new IllegalArgumentException("Model name cannot be null.");
+        }
+
         String selectedModel = MODEL_NAME_1;
         if (modelName.equalsIgnoreCase(MODEL_NAME_2)) {
             selectedModel = MODEL_NAME_2;
         }
 
         model = Model.createModel(context, selectedModel);
+        if (model == null) {
+            throw new IOException("Failed to load the model: " + selectedModel);
+        }
+
         initModelShape();
         labels = FileUtil.loadLabels(context, LABEL_FILE);
-        // labels.remove(0);
+        if (labels == null || labels.isEmpty()) {
+            throw new IOException("Failed to load labels.");
+        }
 
         isInitialized = true;
     }
+
 
     public boolean isInitialized() {
         return isInitialized;

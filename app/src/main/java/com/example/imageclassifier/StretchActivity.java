@@ -2,7 +2,6 @@ package com.example.imageclassifier;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.camera2.CameraAccessException;
@@ -17,9 +16,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.util.Size;
 import android.view.Surface;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,8 +32,8 @@ import com.example.imageclassifier.utils.YuvToRgbConverter;
 import java.io.IOException;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
-    public static final String TAG = "[IC]MainActivity";
+public class StretchActivity extends AppCompatActivity {
+    public static final String TAG = "[IC]StretchActivity";
 
     private static final String SELECTED_MODEL_EXTRA = "SELECTED_MODEL";
 
@@ -45,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String selectedModel;
 
-    private TextView textView;
     private Classifier cls;
 
     private int previewWidth = 0;
@@ -54,30 +50,23 @@ public class MainActivity extends AppCompatActivity {
 
     private Bitmap rgbFrameBitmap = null;
 
-    private static final long DELAY_MILLIS = 10000; // 10초
-
     private HandlerThread handlerThread;
     private Handler handler;
-    private Handler delayHandler;
-    private Button stretchButton;
 
     private boolean isProcessingFrame = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_stretching);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        textView = findViewById(R.id.textView);
-
+        selectedModel = "model_unquant.tflite";
         cls = new Classifier(this);
-
-        selectedModel = getIntent().getStringExtra(SELECTED_MODEL_EXTRA);
 
         try {
             cls.init(selectedModel);
@@ -85,42 +74,17 @@ public class MainActivity extends AppCompatActivity {
             ioe.printStackTrace();
         }
 
-        if(checkSelfPermission(CAMERA_PERMISSION)
-                == PackageManager.PERMISSION_GRANTED) {
+        if(checkSelfPermission(CAMERA_PERMISSION) == PackageManager.PERMISSION_GRANTED) {
             setFragment();
         } else {
-            requestPermissions(new String[]{CAMERA_PERMISSION},
-                    PERMISSION_REQUEST_CODE);
+            requestPermissions(new String[]{CAMERA_PERMISSION}, PERMISSION_REQUEST_CODE);
         }
-
-        delayHandler = new Handler();
-        stretchButton = findViewById(R.id.stretchButton);
-        stretchButton.setVisibility(View.GONE);
-
-        // Start the timer for 10 seconds
-        delayHandler.postDelayed(() -> {
-            runOnUiThread(() -> {
-                // Show the button after 10 seconds
-                stretchButton.setVisibility(View.VISIBLE);
-                // Set a click listener for the button
-                stretchButton.setOnClickListener(v -> {
-                    // Navigate to StretchActivity
-                    Intent intent = new Intent(MainActivity.this, StretchActivity.class);
-                    startActivity(intent);
-                });
-            });
-        }, DELAY_MILLIS);
     }
-
-
 
 
     @Override
     protected synchronized void onDestroy() {
         cls.finish();
-        if (delayHandler != null) {
-            delayHandler.removeCallbacksAndMessages(null);
-        }
         super.onDestroy();
     }
 
@@ -205,14 +169,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String chooseCamera() {
-        final CameraManager manager =
-                (CameraManager)getSystemService(Context.CAMERA_SERVICE);
+        final CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             for (final String cameraId : manager.getCameraIdList()) {
-                final CameraCharacteristics characteristics =
-                        manager.getCameraCharacteristics(cameraId);
+                final CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
 
                 final Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
+                Log.d(TAG, "Camera Id: " + cameraId + ", Facing: " + facing);
                 if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
                     return cameraId;
                 }
@@ -272,15 +235,19 @@ public class MainActivity extends AppCompatActivity {
                     String resultStr = String.format(Locale.ENGLISH,
                             "class : %s, prob : %.2f%%",
                             output.first, output.second * 100);
+
+                    // Display the result in TextView
+                    TextView textView = findViewById(R.id.textView);
                     textView.setText(resultStr);
 
-//                    Toast.makeText(MainActivity.this, "Running model: " + selectedModel, Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(StretchActivity.this, "Running model: " + selectedModel, Toast.LENGTH_SHORT).show();
                 });
             }
             image.close();
             isProcessingFrame = false;
         });
     }
+
 
     protected synchronized void runInBackground(final Runnable r) {
         if (handler != null) {
