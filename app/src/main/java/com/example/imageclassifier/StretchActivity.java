@@ -1,6 +1,7 @@
 package com.example.imageclassifier;
 
 import android.Manifest;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -23,10 +24,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import android.app.Fragment;
 
 import com.example.imageclassifier.camera.CameraFragment;
-import com.example.imageclassifier.tflite.Classifier;
+import com.example.imageclassifier.tflite.Classifier_stretch;
 import com.example.imageclassifier.utils.YuvToRgbConverter;
 
 import java.io.IOException;
@@ -35,14 +35,10 @@ import java.util.Locale;
 public class StretchActivity extends AppCompatActivity {
     public static final String TAG = "[IC]StretchActivity";
 
-    private static final String SELECTED_MODEL_EXTRA = "SELECTED_MODEL";
-
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
     private static final int PERMISSION_REQUEST_CODE = 1;
 
-    private String selectedModel;
-
-    private Classifier cls;
+    private Classifier_stretch cls;
 
     private int previewWidth = 0;
     private int previewHeight = 0;
@@ -65,22 +61,20 @@ public class StretchActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        selectedModel = "model_unquant.tflite";
-        cls = new Classifier(this);
+        cls = new Classifier_stretch(this);
 
         try {
-            cls.init(selectedModel);
+            cls.init();
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
 
-        if(checkSelfPermission(CAMERA_PERMISSION) == PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(CAMERA_PERMISSION) == PackageManager.PERMISSION_GRANTED) {
             setFragment();
         } else {
             requestPermissions(new String[]{CAMERA_PERMISSION}, PERMISSION_REQUEST_CODE);
         }
     }
-
 
     @Override
     protected synchronized void onDestroy() {
@@ -124,8 +118,8 @@ public class StretchActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if(requestCode == PERMISSION_REQUEST_CODE) {
-            if(grantResults.length > 0 && allPermissionsGranted(grantResults)) {
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && allPermissionsGranted(grantResults)) {
                 setFragment();
             } else {
                 Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
@@ -167,7 +161,6 @@ public class StretchActivity extends AppCompatActivity {
         }
     }
 
-
     private String chooseCamera() {
         final CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
@@ -187,8 +180,7 @@ public class StretchActivity extends AppCompatActivity {
         return "";
     }
 
-
-    protected int getScreenOrientation() {
+    private int getScreenOrientation() {
         switch (getWindowManager().getDefaultDisplay().getRotation()) {
             case Surface.ROTATION_270:
                 return 270;
@@ -206,7 +198,7 @@ public class StretchActivity extends AppCompatActivity {
             return;
         }
 
-        if(rgbFrameBitmap == null) {
+        if (rgbFrameBitmap == null) {
             rgbFrameBitmap = Bitmap.createBitmap(
                     previewWidth,
                     previewHeight,
@@ -239,8 +231,6 @@ public class StretchActivity extends AppCompatActivity {
                     // Display the result in TextView
                     TextView textView = findViewById(R.id.textView);
                     textView.setText(resultStr);
-
-                    // Toast.makeText(StretchActivity.this, "Running model: " + selectedModel, Toast.LENGTH_SHORT).show();
                 });
             }
             image.close();
@@ -248,8 +238,7 @@ public class StretchActivity extends AppCompatActivity {
         });
     }
 
-
-    protected synchronized void runInBackground(final Runnable r) {
+    private synchronized void runInBackground(final Runnable r) {
         if (handler != null) {
             handler.post(r);
         }

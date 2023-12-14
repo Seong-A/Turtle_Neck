@@ -30,7 +30,7 @@ public class SelectActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // 현재 선택된 버튼을 추적하고, 이전에 선택된 버튼을 되돌리기
                 updateButtonState(leftButton);
-                startMainActivity("turtlemodel_1.tflite");
+                startMainActivity("turtlemodel_2.tflite");
             }
         });
 
@@ -39,7 +39,7 @@ public class SelectActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // 현재 선택된 버튼을 추적하고, 이전에 선택된 버튼을 되돌리기
                 updateButtonState(rightButton);
-                startMainActivity("turtlemodel_2.tflite");
+                startMainActivity("model_unquant.tflite");
             }
         });
     }

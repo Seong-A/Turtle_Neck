@@ -5,8 +5,6 @@ import android.graphics.Bitmap;
 import android.util.Pair;
 import android.util.Size;
 
-import androidx.annotation.Nullable;
-
 import org.tensorflow.lite.Tensor;
 import org.tensorflow.lite.support.common.FileUtil;
 import org.tensorflow.lite.support.common.ops.NormalizeOp;
@@ -22,15 +20,14 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.tensorflow.lite.support.image.ops.ResizeOp.ResizeMethod.NEAREST_NEIGHBOR;
 
-public class Classifier {
-    private static final String MODEL_NAME_1 = "turtlemodel_2.tflite"; //왼쪽
-    private static final String MODEL_NAME_2 = "model_unquant.tflite"; //오른쪽
-    private static final String LABEL_FILE = "turtlelabels.txt";
-
+public class Classifier_stretch {
+    private static final String MODEL_NAME = "model_stretch.tflite";
+    private static final String LABEL_FILE = "labels.txt";
 
     Context context;
     Model model;
@@ -41,34 +38,24 @@ public class Classifier {
 
     private boolean isInitialized = false;
 
-    public Classifier(Context context) {
+    public Classifier_stretch(Context context) {
         this.context = context;
     }
 
-    public void init(@Nullable String modelName) throws IOException {
-        if (modelName == null) {
-            throw new IllegalArgumentException("Model name cannot be null.");
-        }
-
-        String selectedModel = MODEL_NAME_1;
-        if (modelName.equalsIgnoreCase(MODEL_NAME_2)) {
-            selectedModel = MODEL_NAME_2;
-        }
-
-        model = Model.createModel(context, selectedModel);
+    public void init() throws IOException {
+        model = Model.createModel(context, MODEL_NAME);
         if (model == null) {
-            throw new IOException("Failed to load the model: " + selectedModel);
+            throw new IOException("모델을 로드하는 데 실패했습니다: " + MODEL_NAME);
         }
 
         initModelShape();
         labels = FileUtil.loadLabels(context, LABEL_FILE);
         if (labels == null || labels.isEmpty()) {
-            throw new IOException("Failed to load labels.");
+            throw new IOException("라벨을 로드하는 데 실패했습니다.");
         }
 
         isInitialized = true;
     }
-
 
     public boolean isInitialized() {
         return isInitialized;
@@ -88,17 +75,17 @@ public class Classifier {
     }
 
     public Size getModelInputSize() {
-        if(!isInitialized)
+        if (!isInitialized)
             return new Size(0, 0);
         return new Size(modelInputWidth, modelInputHeight);
     }
 
     private Bitmap convertBitmapToARGB8888(Bitmap bitmap) {
-        return bitmap.copy(Bitmap.Config.ARGB_8888,true);
+        return bitmap.copy(Bitmap.Config.ARGB_8888, true);
     }
 
     private TensorImage loadImage(final Bitmap bitmap, int sensorOrientation) {
-        if(bitmap.getConfig() != Bitmap.Config.ARGB_8888) {
+        if (bitmap.getConfig() != Bitmap.Config.ARGB_8888) {
             inputImage.load(convertBitmapToARGB8888(bitmap));
         } else {
             inputImage.load(bitmap);
@@ -121,7 +108,7 @@ public class Classifier {
         inputImage = loadImage(image, sensorOrientation);
 
         Object[] inputs = new Object[]{inputImage.getBuffer()};
-        Map<Integer, Object> outputs = new HashMap();
+        Map<Integer, Object> outputs = new HashMap<>();
         outputs.put(0, outputBuffer.getBuffer().rewind());
 
         model.run(inputs, outputs);
@@ -140,9 +127,9 @@ public class Classifier {
         String maxKey = "";
         float maxVal = -1;
 
-        for(Map.Entry<String, Float> entry : map.entrySet()) {
+        for (Map.Entry<String, Float> entry : map.entrySet()) {
             float f = entry.getValue();
-            if(f > maxVal) {
+            if (f > maxVal) {
                 maxKey = entry.getKey();
                 maxVal = f;
             }
@@ -152,7 +139,7 @@ public class Classifier {
     }
 
     public void finish() {
-        if(model != null) {
+        if (model != null) {
             model.close();
             isInitialized = false;
         }
