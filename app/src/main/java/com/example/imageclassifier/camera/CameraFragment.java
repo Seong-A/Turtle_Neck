@@ -42,12 +42,6 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CameraFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-
 @SuppressLint("ValidFragment")
 public class CameraFragment extends Fragment {
     public static final String TAG = "[IC]CameraFragment";
