@@ -10,6 +10,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SelectActivity extends AppCompatActivity {
 
+    private static final String SELECTED_MODEL_EXTRA = "SELECTED_MODEL";
+
+    private Button selectedButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,24 +28,38 @@ public class SelectActivity extends AppCompatActivity {
         leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                leftButton.setBackgroundResource(R.drawable.btn_background2);
-                leftButton.setTextColor(getResources().getColor(R.color.black));
-                Intent intent = new Intent(SelectActivity.this, MainActivity.class);
-                startActivity(intent);
-
-
+                // 현재 선택된 버튼을 추적하고, 이전에 선택된 버튼을 되돌리기
+                updateButtonState(leftButton);
+                startMainActivity("turtlemodel_1.tflite");
             }
         });
 
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                rightButton.setBackgroundResource(R.drawable.btn_background2);
-                rightButton.setTextColor(getResources().getColor(R.color.black));
-                Intent intent = new Intent(SelectActivity.this, MainActivity.class);
-                startActivity(intent);
-
+                // 현재 선택된 버튼을 추적하고, 이전에 선택된 버튼을 되돌리기
+                updateButtonState(rightButton);
+                startMainActivity("turtlemodel_2.tflite");
             }
         });
+    }
+
+    private void updateButtonState(Button newSelectedButton) {
+        // 이전에 선택된 버튼이 있다면, 원래의 상태로 되돌리기
+        if (selectedButton != null) {
+            selectedButton.setBackgroundResource(R.drawable.btn_background);
+            selectedButton.setTextColor(getResources().getColor(R.color.white));
+        }
+
+        // 새로 선택된 버튼을 추적
+        selectedButton = newSelectedButton;
+        selectedButton.setBackgroundResource(R.drawable.btn_background2);
+        selectedButton.setTextColor(getResources().getColor(R.color.black));
+    }
+
+    private void startMainActivity(String selectedModel) {
+        Intent intent = new Intent(SelectActivity.this, MainActivity.class);
+        intent.putExtra(SELECTED_MODEL_EXTRA, selectedModel);
+        startActivity(intent);
     }
 }

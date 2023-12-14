@@ -27,8 +27,8 @@ import java.util.Map;
 import static org.tensorflow.lite.support.image.ops.ResizeOp.ResizeMethod.NEAREST_NEIGHBOR;
 
 public class Classifier {
-//    private static final String MODEL_NAME = "turtlemodel_1.tflite";
-    private static final String MODEL_NAME = "turtlemodel_2.tflite";
+    private static final String MODEL_NAME_1 = "turtlemodel_1.tflite";
+    private static final String MODEL_NAME_2 = "turtlemodel_2.tflite";
     private static final String LABEL_FILE = "turtlelabels.txt";
 
     Context context;
@@ -44,12 +44,16 @@ public class Classifier {
         this.context = context;
     }
 
-    public void init() throws IOException {
-        model = Model.createModel(context, MODEL_NAME);
+    public void init(String modelName) throws IOException {
+        String selectedModel = MODEL_NAME_1;
+        if (modelName.equalsIgnoreCase(MODEL_NAME_2)) {
+            selectedModel = MODEL_NAME_2;
+        }
 
+        model = Model.createModel(context, selectedModel);
         initModelShape();
         labels = FileUtil.loadLabels(context, LABEL_FILE);
-//        labels.remove(0);
+        // labels.remove(0);
 
         isInitialized = true;
     }

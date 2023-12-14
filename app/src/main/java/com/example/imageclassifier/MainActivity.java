@@ -35,8 +35,12 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "[IC]MainActivity";
 
+    private static final String SELECTED_MODEL_EXTRA = "SELECTED_MODEL";
+
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
     private static final int PERMISSION_REQUEST_CODE = 1;
+
+    private String selectedModel;
 
     private TextView textView;
     private Classifier cls;
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(null);
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         ActionBar actionBar = getSupportActionBar();
@@ -65,8 +69,11 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
 
         cls = new Classifier(this);
+
+        selectedModel = getIntent().getStringExtra(SELECTED_MODEL_EXTRA);
+
         try {
-            cls.init();
+            cls.init(selectedModel);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -79,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     PERMISSION_REQUEST_CODE);
         }
     }
+
 
     @Override
     protected synchronized void onDestroy() {
@@ -235,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
                             "class : %s, prob : %.2f%%",
                             output.first, output.second * 100);
                     textView.setText(resultStr);
+
+                    Toast.makeText(MainActivity.this, "Running model: " + selectedModel, Toast.LENGTH_SHORT).show();
                 });
             }
             image.close();
