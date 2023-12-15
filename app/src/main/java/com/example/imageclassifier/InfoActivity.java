@@ -45,6 +45,9 @@ public class InfoActivity extends AppCompatActivity {
                     return new InfoFragment3(); //activity_info3
                 case 3:
                     return new InfoFragment4(); //activity_info4
+                case 4:
+                    return new InfoFragment5(); //activity_info4
+
 
                 default:
                     return null;
@@ -53,7 +56,7 @@ public class InfoActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
 
         @Override
@@ -61,11 +64,11 @@ public class InfoActivity extends AppCompatActivity {
             super.finishUpdate(container);
 
             // 페이지가 변경되었을 때 호출되는 메소드
-            // 현재 페이지의 인덱스를 가져옴
             int currentItem = viewPager.getCurrentItem();
 
             // 마지막 페이지인 경우 SelectActivity로 이동
             if (currentItem == getCount() - 1) {
+                // 마지막 페이지에서 오른쪽으로 슬라이딩하여 다음 액티비티로 이동
                 Intent intent = new Intent(InfoActivity.this, SelectActivity.class);
                 startActivity(intent);
                 finish();

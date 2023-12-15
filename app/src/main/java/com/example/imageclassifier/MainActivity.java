@@ -54,12 +54,18 @@ public class MainActivity extends AppCompatActivity {
 
     private Bitmap rgbFrameBitmap = null;
 
-    private static final long DELAY_MILLIS = 10000; // 10초
+    private static final long PROB_UPDATE_DELAY_MILLIS = 1000; // 1초
+    private static final long TARGET_DELAY_MILLIS = 10000; // 10초
+    private static final float TARGET_PROBABILITY = 0.7f; // 70프로
+    private long turtleStartTimeMillis = 0;
+
+    private Handler probUpdateHandler;
 
     private HandlerThread handlerThread;
     private Handler handler;
     private Handler delayHandler;
     private Button stretchButton;
+    private long startTimeMillis;
 
     private boolean isProcessingFrame = false;
 
@@ -97,19 +103,24 @@ public class MainActivity extends AppCompatActivity {
         stretchButton = findViewById(R.id.stretchButton);
         stretchButton.setVisibility(View.GONE);
 
-        // Start the timer for 10 seconds
-        delayHandler.postDelayed(() -> {
-            runOnUiThread(() -> {
-                // Show the button after 10 seconds
-                stretchButton.setVisibility(View.VISIBLE);
-                // Set a click listener for the button
-                stretchButton.setOnClickListener(v -> {
-                    // Navigate to StretchActivity
-                    Intent intent = new Intent(MainActivity.this, StretchActivity.class);
-                    startActivity(intent);
-                });
-            });
-        }, DELAY_MILLIS);
+        // 1초마다 확률 업데이트를 위한 핸들러 초기화
+        probUpdateHandler = new Handler();
+
+        // 1초마다 확률을 업데이트하는 타이머 시작
+        probUpdateHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // 확률 표시 업데이트
+                updateProbability();
+
+                // 다음 업데이트를 1초 후에 예약
+                probUpdateHandler.postDelayed(this, PROB_UPDATE_DELAY_MILLIS);
+            }
+        }, PROB_UPDATE_DELAY_MILLIS);
+
+
+        startTimeMillis = System.currentTimeMillis();
+
     }
 
 
@@ -238,6 +249,49 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void updateProbability() {
+        if (cls != null && cls.isInitialized() && rgbFrameBitmap != null) {
+            final Pair<String, Float> output = cls.classify(rgbFrameBitmap, sensorOrientation);
+            Log.d(TAG, "Classified result: " + output.first + ", Probability: " + output.second);
+
+            runOnUiThread(() -> {
+                String resultStr = String.format(Locale.ENGLISH,
+                        "class : %s, prob : %.2f%%",
+                        output.first, output.second * 100);
+                textView.setText(resultStr);
+
+                if (output.first.equals("Turtle") && output.second >= TARGET_PROBABILITY) {
+                    if (turtleStartTimeMillis == 0) {
+                        // 타이머측정
+                        turtleStartTimeMillis = System.currentTimeMillis();
+                    } else {
+                        // Check if the timer has exceeded 10 seconds
+                        if (System.currentTimeMillis() - turtleStartTimeMillis >= TARGET_DELAY_MILLIS) {
+                            delayHandler.removeCallbacksAndMessages(null);
+
+                            stretchButton.setVisibility(View.VISIBLE);
+                            stretchButton.setOnClickListener(v -> {
+                                // Navigate to StretchActivity
+                                Intent intent = new Intent(MainActivity.this, StretchActivity.class);
+                                startActivity(intent);
+                            });
+                            // Reset the timer after showing the button
+                            turtleStartTimeMillis = 0;
+                        }
+                    }
+                } else {
+                    // Reset the timer if the detected class changes or the probability drops below 70%
+                    turtleStartTimeMillis = 0;
+                }
+
+                // Log to check if stretchButton is null or not
+                Log.d(TAG, "stretchButton visibility: " + stretchButton.getVisibility());
+            });
+        }
+    }
+
+
+
     protected void processImage(ImageReader reader) {
         if (previewWidth == 0 || previewHeight == 0) {
             return;
@@ -266,16 +320,8 @@ public class MainActivity extends AppCompatActivity {
 
         runInBackground(() -> {
             if (cls != null && cls.isInitialized()) {
-                final Pair<String, Float> output = cls.classify(rgbFrameBitmap, sensorOrientation);
-
-                runOnUiThread(() -> {
-                    String resultStr = String.format(Locale.ENGLISH,
-                            "class : %s, prob : %.2f%%",
-                            output.first, output.second * 100);
-                    textView.setText(resultStr);
-
-//                    Toast.makeText(MainActivity.this, "Running model: " + selectedModel, Toast.LENGTH_SHORT).show();
-                });
+                // 백그라운드 스레드에서 확률 표시 업데이트 논리를 주석 처리
+                // final Pair<String, Float> output = cls.classify(rgbFrameBitmap, sensorOrientation);
             }
             image.close();
             isProcessingFrame = false;

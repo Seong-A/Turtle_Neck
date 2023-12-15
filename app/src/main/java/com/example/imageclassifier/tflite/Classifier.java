@@ -31,7 +31,6 @@ public class Classifier {
     private static final String MODEL_NAME_2 = "model_unquant.tflite"; //오른쪽
     private static final String LABEL_FILE = "turtlelabels.txt";
 
-
     Context context;
     Model model;
     int modelInputWidth, modelInputHeight, modelInputChannel;
@@ -131,6 +130,8 @@ public class Classifier {
 
         return argmax(output);
     }
+
+
 
     public Pair<String, Float> classify(Bitmap image) {
         return classify(image, 0);

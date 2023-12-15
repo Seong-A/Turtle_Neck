@@ -38,6 +38,7 @@ public class StretchActivity extends AppCompatActivity {
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
     private static final int PERMISSION_REQUEST_CODE = 1;
 
+    private TextView textView;
     private Classifier_stretch cls;
 
     private int previewWidth = 0;
@@ -51,6 +52,9 @@ public class StretchActivity extends AppCompatActivity {
 
     private boolean isProcessingFrame = false;
 
+    private Handler probUpdateHandler;
+    private static final long PROB_UPDATE_DELAY_MILLIS = 1000; // 1초
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +63,7 @@ public class StretchActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
 
+        textView = findViewById(R.id.textView);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         cls = new Classifier_stretch(this);
@@ -74,6 +79,20 @@ public class StretchActivity extends AppCompatActivity {
         } else {
             requestPermissions(new String[]{CAMERA_PERMISSION}, PERMISSION_REQUEST_CODE);
         }
+
+        // 1초마다 확률 업데이트를 위한 핸들러 초기화
+        probUpdateHandler = new Handler();
+
+        // 1초마다 확률을 업데이트하는 타이머 시작
+        probUpdateHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // 확률 표시 업데이트
+                updateProbability();
+                // 다음 업데이트를 1초 후에 예약
+                probUpdateHandler.postDelayed(this, PROB_UPDATE_DELAY_MILLIS);
+            }
+        }, PROB_UPDATE_DELAY_MILLIS);
     }
 
     @Override
@@ -193,6 +212,18 @@ public class StretchActivity extends AppCompatActivity {
         }
     }
 
+    private void updateProbability() {
+        if (cls != null && cls.isInitialized() && rgbFrameBitmap != null) {
+            final Pair<String, Float> output = cls.classify(rgbFrameBitmap, sensorOrientation);
+            runOnUiThread(() -> {
+                String resultStr = String.format(Locale.ENGLISH,
+                        "class : %s, prob : %.2f%%",
+                        output.first, output.second * 100);
+                textView.setText(resultStr);
+            });
+        }
+    }
+
     protected void processImage(ImageReader reader) {
         if (previewWidth == 0 || previewHeight == 0) {
             return;
@@ -221,17 +252,17 @@ public class StretchActivity extends AppCompatActivity {
 
         runInBackground(() -> {
             if (cls != null && cls.isInitialized()) {
-                final Pair<String, Float> output = cls.classify(rgbFrameBitmap, sensorOrientation);
-
-                runOnUiThread(() -> {
-                    String resultStr = String.format(Locale.ENGLISH,
-                            "class : %s, prob : %.2f%%",
-                            output.first, output.second * 100);
-
-                    // Display the result in TextView
-                    TextView textView = findViewById(R.id.textView);
-                    textView.setText(resultStr);
-                });
+//                final Pair<String, Float> output = cls.classify(rgbFrameBitmap, sensorOrientation);
+//
+//                runOnUiThread(() -> {
+//                    String resultStr = String.format(Locale.ENGLISH,
+//                            "class : %s, prob : %.2f%%",
+//                            output.first, output.second * 100);
+//
+//                    // Display the result in TextView
+//                    TextView textView = findViewById(R.id.textView);
+//                    textView.setText(resultStr);
+//                });
             }
             image.close();
             isProcessingFrame = false;
