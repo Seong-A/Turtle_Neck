@@ -20,14 +20,13 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import static org.tensorflow.lite.support.image.ops.ResizeOp.ResizeMethod.NEAREST_NEIGHBOR;
 
-public class Classifier_stretch {
-    private static final String MODEL_NAME = "Stretching_Left01.tflite";
-    private static final String LABEL_FILE = "Stretching_Left_labels.txt";
+public class Classifier_st_Right {
+    private static final String MODEL_NAME = "Stretching_Right.tflite";
+    private static final String LABEL_FILE = "Stretching_Right_labels.txt";
 
     Context context;
     Model model;
@@ -38,7 +37,7 @@ public class Classifier_stretch {
 
     private boolean isInitialized = false;
 
-    public Classifier_stretch(Context context) {
+    public Classifier_st_Right(Context context) {
         this.context = context;
     }
 

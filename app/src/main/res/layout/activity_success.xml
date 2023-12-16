@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SelectActivity">
+    tools:context=".SuccessActivity">
 
 
     <LinearLayout
@@ -21,22 +21,33 @@
             app:srcCompat="@drawable/logo1" />
 
         <ImageView
-            android:id="@+id/phone"
-            android:layout_width="290dp"
-            android:layout_height="233dp"
+            android:id="@+id/success"
+            android:layout_width="386dp"
+            android:layout_height="164dp"
             android:layout_gravity="center"
-            android:layout_marginTop="60dp"
-            app:srcCompat="@drawable/phone" />
+            android:layout_marginTop="30dp"
+            app:srcCompat="@drawable/success" />
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginTop="50dp"
+            android:layout_height="93dp"
             android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:text="축하합니다!!! \n 거북목에서 한걸음 멀어지셨네요 !"
             android:textAlignment="center"
-            android:text="휴대전화의 위치를 선택해주세요"
             android:textColor="@color/black"
-            android:textSize="22dp"/>
+            android:textSize="23dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:text="다시 거북Therapy에 도전하시겠습니까?"
+            android:textAlignment="center"
+            android:textColor="#49B302"
+            android:textStyle="bold"
+            android:textSize="22dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,28 +56,29 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/left"
+                android:id="@+id/again"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="70dp"
                 android:background="@drawable/btn_background"
-                android:text="좌"
+                android:text="도전"
                 android:textColor="@color/white"
                 android:textSize="30dp"
                 android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/right"
+                android:id="@+id/end"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="31dp"
                 android:background="@drawable/btn_background"
-                android:text="우"
+                android:text="종료"
                 android:textColor="@color/white"
                 android:textSize="30dp"
                 android:textStyle="bold" />
+
 
         </LinearLayout>
 

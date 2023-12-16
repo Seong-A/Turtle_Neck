@@ -28,19 +28,20 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.imageclassifier.camera.CameraFragment;
 import com.example.imageclassifier.tflite.Classifier_st_Left;
+import com.example.imageclassifier.tflite.Classifier_st_Right;
 import com.example.imageclassifier.utils.YuvToRgbConverter;
 
 import java.io.IOException;
 import java.util.Locale;
 
-public class StretchActivity extends AppCompatActivity {
-    public static final String TAG = "[IC]StretchActivity";
+public class StretchRightActivity extends AppCompatActivity {
+    public static final String TAG = "[IC]StretchRightActivity";
 
     private static final String CAMERA_PERMISSION = Manifest.permission.CAMERA;
     private static final int PERMISSION_REQUEST_CODE = 1;
 
     private TextView textView;
-    private Classifier_st_Left cls;
+    private Classifier_st_Right cls;
 
     private int previewWidth = 0;
     private int previewHeight = 0;
@@ -62,7 +63,7 @@ public class StretchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stretching_l);
+        setContentView(R.layout.activity_stretching_r);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
@@ -70,7 +71,7 @@ public class StretchActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        cls = new Classifier_st_Left(this);
+        cls = new Classifier_st_Right(this);
 
         try {
             cls.init();
@@ -225,15 +226,15 @@ public class StretchActivity extends AppCompatActivity {
                         output.first, output.second * 100);
                 textView.setText(resultStr);
 
-                if (output.first.equals("Left") && output.second >= TARGET_PROBABILITY) {
+                if (output.first.equals("Right") && output.second >= TARGET_PROBABILITY) {
                     if (stayStartTimeMillis == 0) {
                         // 타이머 측정 시작
                         stayStartTimeMillis = System.currentTimeMillis();
                     } else {
                         // stay 클래스가 70% 이상을 15초 이상 유지하면 전환
                         if (System.currentTimeMillis() - stayStartTimeMillis >= TARGET_STAY_DELAY_MILLIS) {
-                            // 여기에서 stretchRightActivity로 전환하는 코드 추가
-                            Intent intent = new Intent(StretchActivity.this, StretchRightActivity.class);
+                            // 여기에서 stretchUpActivity로 전환하는 코드 추가
+                            Intent intent = new Intent(StretchRightActivity.this, StretchUpActivity.class);
                             startActivity(intent);
                             finish(); // 현재 Activity 종료
                         }

@@ -1,2 +1,2 @@
-0 Stay
-1 Left
+Stay
+Left

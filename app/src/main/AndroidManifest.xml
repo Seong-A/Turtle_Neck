@@ -44,6 +44,23 @@
             android:exported="true">
         </activity>
 
+        <activity
+            android:name=".StretchRightActivity"
+            android:screenOrientation="portrait"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".StretchUpActivity"
+            android:screenOrientation="portrait"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".SuccessActivity"
+            android:exported="true">
+        </activity>
+
     </application>
 
 </manifest>

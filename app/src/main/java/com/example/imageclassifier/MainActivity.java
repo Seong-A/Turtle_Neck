@@ -152,6 +152,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public synchronized void onPause() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
         handlerThread.quitSafely();
         try {
             handlerThread.join();
