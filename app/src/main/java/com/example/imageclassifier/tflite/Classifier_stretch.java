@@ -26,8 +26,8 @@ import java.util.Map;
 import static org.tensorflow.lite.support.image.ops.ResizeOp.ResizeMethod.NEAREST_NEIGHBOR;
 
 public class Classifier_stretch {
-    private static final String MODEL_NAME = "model_stretch.tflite";
-    private static final String LABEL_FILE = "labels.txt";
+    private static final String MODEL_NAME = "Stretching_Left01.tflite";
+    private static final String LABEL_FILE = "Stretching_Left_labels.txt";
 
     Context context;
     Model model;

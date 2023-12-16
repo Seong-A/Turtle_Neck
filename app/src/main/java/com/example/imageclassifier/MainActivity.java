@@ -10,6 +10,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private static final long TARGET_DELAY_MILLIS = 10000; // 10초
     private static final float TARGET_PROBABILITY = 0.7f; // 70프로
     private long turtleStartTimeMillis = 0;
+    private boolean audioPlayed = false;
 
     private Handler probUpdateHandler;
 
@@ -68,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
     private long startTimeMillis;
 
     private boolean isProcessingFrame = false;
+
+    private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
             }
         }, PROB_UPDATE_DELAY_MILLIS);
 
+        mediaPlayer = MediaPlayer.create(this, R.raw.turtle_neck);
+        mediaPlayer.setLooping(false);
 
         startTimeMillis = System.currentTimeMillis();
 
@@ -261,27 +267,38 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText(resultStr);
 
                 if (output.first.equals("Turtle") && output.second >= TARGET_PROBABILITY) {
-                    if (turtleStartTimeMillis == 0) {
-                        // 타이머측정
+                    if (!audioPlayed) {
+                        // 타이머 측정
                         turtleStartTimeMillis = System.currentTimeMillis();
+                        audioPlayed = true; // 한 번만 재생되도록 설정
                     } else {
-                        // Check if the timer has exceeded 10 seconds
+                        // 타이머가 10초를 초과했는지 확인
                         if (System.currentTimeMillis() - turtleStartTimeMillis >= TARGET_DELAY_MILLIS) {
                             delayHandler.removeCallbacksAndMessages(null);
 
                             stretchButton.setVisibility(View.VISIBLE);
                             stretchButton.setOnClickListener(v -> {
-                                // Navigate to StretchActivity
                                 Intent intent = new Intent(MainActivity.this, StretchActivity.class);
                                 startActivity(intent);
                             });
-                            // Reset the timer after showing the button
+
+                            // 조건이 충족되면 오디오 재생
+                            if (!mediaPlayer.isPlaying()) {
+                                mediaPlayer.start();
+                            }
+
+                            // 버튼 표시 후 타이머 및 오디오 중지
                             turtleStartTimeMillis = 0;
+                            delayHandler.postDelayed(() -> {
+                                mediaPlayer.stop();
+                                audioPlayed = false; // 재생이 중지되면 재설정
+                            }, TARGET_DELAY_MILLIS);
                         }
                     }
                 } else {
-                    // Reset the timer if the detected class changes or the probability drops below 70%
+                    // 감지된 클래스가 변경되거나 확률이 70% 미만으로 떨어지면 타이머 및 재생 상태 재설정
                     turtleStartTimeMillis = 0;
+                    audioPlayed = false;
                 }
 
                 // Log to check if stretchButton is null or not
@@ -289,7 +306,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
 
 
     protected void processImage(ImageReader reader) {
