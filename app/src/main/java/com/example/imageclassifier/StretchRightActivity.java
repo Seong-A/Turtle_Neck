@@ -11,6 +11,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -60,6 +61,8 @@ public class StretchRightActivity extends AppCompatActivity {
     private static final float TARGET_PROBABILITY = 0.7f; // 70%
     private long stayStartTimeMillis = 0;
 
+    private MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +81,10 @@ public class StretchRightActivity extends AppCompatActivity {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+
+        // MediaPlayer 초기화 및 mp3 재생
+        mediaPlayer = MediaPlayer.create(this, R.raw.stretch_right);
+        mediaPlayer.start();
 
         if (checkSelfPermission(CAMERA_PERMISSION) == PackageManager.PERMISSION_GRANTED) {
             setFragment();
@@ -102,6 +109,12 @@ public class StretchRightActivity extends AppCompatActivity {
 
     @Override
     protected synchronized void onDestroy() {
+        // MediaPlayer 정리
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+
         cls.finish();
         super.onDestroy();
     }
