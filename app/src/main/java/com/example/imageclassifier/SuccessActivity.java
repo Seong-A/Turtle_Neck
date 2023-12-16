@@ -21,11 +21,11 @@ public class SuccessActivity extends AppCompatActivity {
         Button againButton = findViewById(R.id.again);
         Button endButton = findViewById(R.id.end);
 
-        // "도전" 버튼 클릭 시 MainActivity로 이동
+        // "도전" 버튼 클릭 시 SelectActivity로 이동
         againButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(SuccessActivity.this, MainActivity.class);
+                Intent intent = new Intent(SuccessActivity.this, SelectActivity.class);
                 startActivity(intent);
             }
         });
