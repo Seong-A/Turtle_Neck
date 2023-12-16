@@ -289,14 +289,16 @@ public class MainActivity extends AppCompatActivity {
                             });
 
                             // 조건이 충족되면 오디오 재생
-                            if (!mediaPlayer.isPlaying()) {
+                            if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
                                 mediaPlayer.start();
                             }
 
                             // 버튼 표시 후 타이머 및 오디오 중지
                             turtleStartTimeMillis = 0;
                             delayHandler.postDelayed(() -> {
-                                mediaPlayer.stop();
+                                if (mediaPlayer != null) {
+                                    mediaPlayer.stop();
+                                }
                                 audioPlayed = false; // 재생이 중지되면 재설정
                             }, TARGET_DELAY_MILLIS);
                         }
@@ -312,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
 
 
     protected void processImage(ImageReader reader) {
