@@ -27,7 +27,7 @@ import java.util.Map;
 import static org.tensorflow.lite.support.image.ops.ResizeOp.ResizeMethod.NEAREST_NEIGHBOR;
 
 public class Classifier {
-    private static final String MODEL_NAME_1 = "turtlemodel_2.tflite"; //왼쪽
+    private static final String MODEL_NAME_1 = "turtle_left_model.tflite"; //왼쪽
     private static final String MODEL_NAME_2 = "model_unquant.tflite"; //오른쪽
     private static final String LABEL_FILE = "turtlelabels.txt";
 
