@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 String resultStr = String.format(Locale.ENGLISH,
-                        "class : %s, prob : %.2f%%",
+                        "클래스 : %s, 확률 : %.2f%%",
                         output.first, output.second * 100);
                 textView.setText(resultStr);
 

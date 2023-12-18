@@ -235,17 +235,13 @@ public class CameraFragment extends Fragment {
     }
 
     protected Size chooseOptimalSize(final Size[] choices, final int width, final int height) {
-        final int minSize = Math.min(width, height);
-        final Size desiredSize = new Size(width, height);
+        final int minHeight = 800;
 
-        final List<Size> bigEnough = new ArrayList<Size>();
-        final List<Size> tooSmall = new ArrayList<Size>();
+        final List<Size> bigEnough = new ArrayList<>();
+        final List<Size> tooSmall = new ArrayList<>();
+
         for (final Size option : choices) {
-            if (option.equals(desiredSize)) {
-                return desiredSize;
-            }
-
-            if (option.getHeight() >= minSize && option.getWidth() >= minSize) {
+            if (option.getHeight() >= minHeight) {
                 bigEnough.add(option);
             } else {
                 tooSmall.add(option);
@@ -253,9 +249,11 @@ public class CameraFragment extends Fragment {
         }
 
         if (bigEnough.size() > 0) {
-            return Collections.min(bigEnough, new CompareSizesByArea());
-        } else {
+            return Collections.max(bigEnough, new CompareSizesByArea());
+        } else if (tooSmall.size() > 0) {
             return Collections.max(tooSmall, new CompareSizesByArea());
+        } else {
+            return choices[0]; // 적절한 크기를 찾을 수 없으면 첫 번째 사용 가능한 크기로 대체
         }
     }
 
