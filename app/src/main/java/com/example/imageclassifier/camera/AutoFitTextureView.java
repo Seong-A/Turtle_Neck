@@ -6,8 +6,8 @@ import android.view.TextureView;
 import android.view.View;
 
 public class AutoFitTextureView extends TextureView {
-    private int ratioWidth = 2;
-    private int ratioHeight = 3;
+    private int ratioWidth = 0;
+    private int ratioHeight = 0;
 
     public AutoFitTextureView(final Context context) {
         this(context, null);
@@ -25,8 +25,8 @@ public class AutoFitTextureView extends TextureView {
         if (width < 0 || height < 0) {
             throw new IllegalArgumentException("Size cannot be negative.");
         }
-        ratioWidth = 2;  // 변경된 가로 비율 설정
-        ratioHeight = 3; // 변경된 세로 비율 설정
+        ratioWidth = width;
+        ratioHeight = height;
         requestLayout();
     }
 

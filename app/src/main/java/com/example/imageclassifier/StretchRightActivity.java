@@ -57,7 +57,7 @@ public class StretchRightActivity extends AppCompatActivity {
 
     private Handler probUpdateHandler;
     private static final long PROB_UPDATE_DELAY_MILLIS = 1000; // 1초
-    private static final long TARGET_STAY_DELAY_MILLIS = 15000; // 15초
+    private static final long TARGET_STAY_DELAY_MILLIS = 5000; // 5초
     private static final float TARGET_PROBABILITY = 0.7f; // 70%
     private long stayStartTimeMillis = 0;
 

@@ -42,6 +42,12 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A simple {@link Fragment} subclass.
+ * Use the {@link CameraFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+
 @SuppressLint("ValidFragment")
 public class CameraFragment extends Fragment {
     public static final String TAG = "[IC]CameraFragment";
@@ -152,7 +158,7 @@ public class CameraFragment extends Fragment {
                 @Override
                 public void onSurfaceTextureUpdated(final SurfaceTexture texture) {
                 }
-    };
+            };
 
     @SuppressLint("MissingPermission")
     private void openCamera(final int width, final int height) {
@@ -235,13 +241,17 @@ public class CameraFragment extends Fragment {
     }
 
     protected Size chooseOptimalSize(final Size[] choices, final int width, final int height) {
-        final int minHeight = 800;
+        final int minSize = Math.min(width, height);
+        final Size desiredSize = new Size(width, height);
 
-        final List<Size> bigEnough = new ArrayList<>();
-        final List<Size> tooSmall = new ArrayList<>();
-
+        final List<Size> bigEnough = new ArrayList<Size>();
+        final List<Size> tooSmall = new ArrayList<Size>();
         for (final Size option : choices) {
-            if (option.getHeight() >= minHeight) {
+            if (option.equals(desiredSize)) {
+                return desiredSize;
+            }
+
+            if (option.getHeight() >= minSize && option.getWidth() >= minSize) {
                 bigEnough.add(option);
             } else {
                 tooSmall.add(option);
@@ -249,11 +259,9 @@ public class CameraFragment extends Fragment {
         }
 
         if (bigEnough.size() > 0) {
-            return Collections.max(bigEnough, new CompareSizesByArea());
-        } else if (tooSmall.size() > 0) {
-            return Collections.max(tooSmall, new CompareSizesByArea());
+            return Collections.min(bigEnough, new CompareSizesByArea());
         } else {
-            return choices[0]; // 적절한 크기를 찾을 수 없으면 첫 번째 사용 가능한 크기로 대체
+            return Collections.max(tooSmall, new CompareSizesByArea());
         }
     }
 
@@ -322,26 +330,26 @@ public class CameraFragment extends Fragment {
 
     private final CameraCaptureSession.StateCallback sessionStateCallback =
             new CameraCaptureSession.StateCallback() {
-        @Override
-        public void onConfigured(final CameraCaptureSession cameraCaptureSession) {
-            if (null == cameraDevice) {
-                return;
-            }
+                @Override
+                public void onConfigured(final CameraCaptureSession cameraCaptureSession) {
+                    if (null == cameraDevice) {
+                        return;
+                    }
 
-            captureSession = cameraCaptureSession;
-            try {
-                captureSession.setRepeatingRequest(previewRequestBuilder.build(),
-                        null, backgroundHandler);
-            } catch (final CameraAccessException e) {
-                e.printStackTrace();
-            }
-        }
+                    captureSession = cameraCaptureSession;
+                    try {
+                        captureSession.setRepeatingRequest(previewRequestBuilder.build(),
+                                null, backgroundHandler);
+                    } catch (final CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-        @Override
-        public void onConfigureFailed(final CameraCaptureSession cameraCaptureSession) {
-            Toast.makeText(getActivity(), "CameraCaptureSession Failed", Toast.LENGTH_SHORT).show();
-        }
-    };
+                @Override
+                public void onConfigureFailed(final CameraCaptureSession cameraCaptureSession) {
+                    Toast.makeText(getActivity(), "CameraCaptureSession Failed", Toast.LENGTH_SHORT).show();
+                }
+            };
 
     private void closeCamera() {
         try {

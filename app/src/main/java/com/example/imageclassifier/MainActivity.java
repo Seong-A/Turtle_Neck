@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private Bitmap rgbFrameBitmap = null;
 
     private static final long PROB_UPDATE_DELAY_MILLIS = 1000; // 1초
-    private static final long TARGET_DELAY_MILLIS = 10000; // 10초
+    private static final long TARGET_DELAY_MILLIS = 5000; // 5초
     private static final float TARGET_PROBABILITY = 0.7f; // 70프로
     private long turtleStartTimeMillis = 0;
     private boolean audioPlayed = false;
