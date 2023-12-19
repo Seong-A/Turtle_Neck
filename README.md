@@ -38,8 +38,6 @@
 
 ## Contributors
 
-[<img width="150" alt="Contributor 1" src="https://github.com/Seong-A/Turtle_Neck/assets/83965377/b8b055c2-4823-44dd-a90b-9599513f4797">](https://github.com/Seong-A)
-[<img width="150" alt="Contributor 2" src="https://github.com/Seong-A/Turtle_Neck/assets/83965377/cf8a1ffb-ba8e-40bf-9e18-7f6eead0c56d">](https://github.com/kyungchan0616)
+[<img width="150" alt="Contributor 1" src="https://github.com/Seong-A/Turtle_Neck/assets/83965377/a08c8569-7f22-46c8-ba23-7e5318d642ba">](https://github.com/Seong-A)
 
-
-
+[<img width="150" alt="Contributor 2" src="https://github.com/Seong-A/Turtle_Neck/assets/83965377/90fb63f4-35f6-48e3-ab4b-607d80a1ee36">](https://github.com/kyungchan0616)
